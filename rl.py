@@ -3,8 +3,37 @@ import random
 import numpy as np
 import tensorflow as tf
 from collections import deque
+from gym import spaces
 from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import *
+from stable_baselines.common.env_checker import check_env
+
+
+class SEIREnv(gym.Env):
+    metadata = {'render.modes': ['console']}
+
+    def __init__(self):
+        super(SEIREnv, self).__init__()
+        n_actions = 2
+        self.action_space = spaces.Discrete(n_actions)
+        self.observation_space = spaces.Box(lw=0, high=10)
+
+    def reset(self):
+        pass
+
+    def step(self, action):
+        done = False
+        # reward function
+        reward = 0
+        # additional info
+        info = {}
+        return reward, done, info
+
+    def render(self, mode='console'):
+        pass
+
+    def close(self):
+        pass
 
 
 class Agent:
@@ -75,5 +104,7 @@ class Environment:
 
 
 if __name__ == '__main__':
+    env = SEIREnv()
+    check_env(env, warn=True)
     environment = Environment(32, 100)
     # environment.run()
