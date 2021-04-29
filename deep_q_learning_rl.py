@@ -9,9 +9,8 @@ from stable_baselines import DQN
 from stable_baselines.common.env_checker import check_env
 
 
-# Model is based on and modified from the VacSim Paper and corresponding code repository
+# Model is based on and modified from the VacSim Paper
 # https://arxiv.org/pdf/2009.06602.pdf
-# https://github.com/tavlab-iiitd/VacSIM
 
 class DistributionEnv(gym.Env):
     metadata = {'render.modes': ['human']}
