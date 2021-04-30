@@ -9,7 +9,7 @@ from stable_baselines import DQN
 from stable_baselines.common.env_checker import check_env
 
 
-# Model is based on and modified from the VacSim Paper
+# Model and Code is based on and modified from the VacSim Paper
 # https://arxiv.org/pdf/2009.06602.pdf
 
 class DistributionEnv(gym.Env):
@@ -54,12 +54,7 @@ class DistributionEnv(gym.Env):
         else:
             self.done = False
             self.step_count += 1
-        extra_info = {
-            'actions': self.actions,
-            'vaccine_distribution': (self.actions * (1 / self.bucket)) + (0.5 / self.bucket),
-            'iteration_number': self.step_count
-        }
-        return self.states, self.done, reward, extra_info
+        return self.states, self.done, reward
 
     def reward(self):
         vaccine_proportion = self.actions * (1 / self.bucket)
@@ -74,15 +69,13 @@ class DistributionEnv(gym.Env):
 
 # Alachua County, FL, Mercer County, OH, Suffolk County, VA
 if __name__ == '__main__':
-    df = pd.read_csv('seir-data/combined-seir-1.csv')
+    df = pd.read_csv('seir-data/combined-seir.csv')
     actions = []
     rewards = []
     for i in range(0, len(df), 3):
         day_actions = []
         day_rewards = []
-        print(i)
         array = df[i:i + 3].to_numpy()
-        print(array)
         total_susceptible = sum(array[:, 2])
         total_exposed = sum(array[:, 3])
         total_symptomatic_infection = sum(array[:, 5])
@@ -90,7 +83,6 @@ if __name__ == '__main__':
         total_recovered = sum(array[:, 6])
         total_pathogen = sum(array[:, 7])
         for j in range(3):
-            print(j)
             susceptible = array[j][2] / total_susceptible
             exposed = array[j][3] / total_exposed
             symptomatic_infection = array[j][5] / total_symptomatic_infection
@@ -104,10 +96,9 @@ if __name__ == '__main__':
             nn_model.learn(total_timesteps=int(1e4), log_interval=10000)
             observation = env.reset()
             action, states = nn_model.predict(observation)
-            observation, done, reward, info = env.step(action)
+            observation, done, reward = env.step(action)
             day_actions.append(action)
             day_rewards.append(reward)
-            print(action)
         actions.append(day_actions)
         rewards.append(day_rewards)
     distributions = []
